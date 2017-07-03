@@ -46,7 +46,7 @@ mini* pHeapify(mini* A, mini n)
 #endif
 	#pragma omp parallel
 	{
-		mini id = n - 1 - omp_get_thread_num();
+		mini id = omp_get_thread_num();
 		powLookup[id] = exp(2, id);
 #if debug_sec
 		powIds[id] = id;
@@ -67,8 +67,8 @@ mini* pHeapify(mini* A, mini n)
 
 	#pragma omp parallel
 	{
-		biggy id = comboCount - 1 - omp_get_thread_num();
-		arr_max[comboCount - 1 - id] = max_loc(A, 0, n-1, id, powLookup).second;
+		biggy id = omp_get_thread_num();
+		arr_max[id] = max_loc(A, 0, n-1, id, powLookup).second;
 #if debug_sec
 		#pragma omp single
 		{
@@ -102,21 +102,25 @@ mini* pHeapify(mini* A, mini n)
 	biggy* arr_left = new biggy[comboCount];
 	biggy* arr_right = new biggy[comboCount];
 	
+#if debug_sec
+	int* roundedDowns = new int[comboCount];
+	int* mids = new int[comboCount];
+#endif
 	omp_set_num_threads(comboCount);
 	
 	#pragma omp parallel
 	{
 		biggy id = omp_get_thread_num();
 		arr_count[id] = count(A, 0, n-1, id, powLookup);
-		mini roundedDown = arr_count[id]; 
+		mini roundedDown = (arr_count[id]-1)/2; 
 
 		//round down to nearest power of two sub 1
 		//binary search
-		mini lo = 0, hi = id;
+		mini lo = 0, hi = roundedDown;
 		while (hi > lo + 1)
 		{
 			mini half = (hi + lo) / 2;
-			if (powLookup[half] - 1 > roundedDown)
+			if ((roundedDown & (powLookup[half] - 1)) == roundedDown)
 			{
 				hi = half;
 			}
@@ -142,15 +146,48 @@ mini* pHeapify(mini* A, mini n)
 		arr_right[id] = id & (~leftMatches) & (~bigMaxPos);
 		
 		//arr_selec[id] = selected(A, 0, n-1, id, powLookup).second;
+#if debug_sec
+		roundedDowns[id] = roundedDown;
+		mids[id] = mid;
+#endif
 	}
 
 #if debug_sec
-	std::cout << "made it" << std::endl;
+	std::cout << "arr_left = {";
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << arr_left[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+	std::cout << std::endl;
+	std::cout << "arr_right = {";
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << arr_right[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+	std::cout << std::endl;
+	std::cout << "arr_count = {";
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << arr_count[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+	std::cout << std::endl;
+	std::cout << "roundedDowns = {";
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << roundedDowns[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+	std::cout << std::endl;
+	std::cout << "mids = {";
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << mids[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+	std::cout << std::endl;
 #endif
 
 	//now do parallel recursion step to find final heap
 	mini* heap = new mini[n];
-	completeHeap(heap, n, arr_max, arr_left, arr_right, 0, comboCount-1);
+	completeHeap(heap, n, arr_max, arr_left, arr_right, 0, comboCount-1, A);
 	return heap;
 }
 
@@ -240,7 +277,7 @@ mini count(mini* A, mini lo, mini hi, biggy combo, biggy* powLookup)
 }
 
 void completeHeap(mini* heap, mini n, mini* arr_max, biggy* arr_left,
-			biggy* arr_right, mini i, biggy combo)
+			biggy* arr_right, mini i, biggy combo, int* A)
 {
 	if (i > n || combo == 0)
 	{
@@ -252,11 +289,11 @@ void completeHeap(mini* heap, mini n, mini* arr_max, biggy* arr_left,
 #if debug_sec
 	std::cout << "heap[" << i << "]=" << arr_max[combo] << ";" << std::endl;
 #endif
-	heap[i] = arr_max[combo];
+	heap[i] = A[arr_max[combo]];
 	#pragma omp task untied shared(heap, n, arr_max, arr_left, arr_right, i, combo)
 	{
-		completeHeap(heap, n, arr_max, arr_left, arr_right, 2*i+1, arr_left[combo]);
+		completeHeap(heap, n, arr_max, arr_left, arr_right, 2*i+1, arr_left[combo], A);
 	}
-	completeHeap(heap, n, arr_max, arr_left, arr_right, 2*i+2, arr_right[combo]);
+	completeHeap(heap, n, arr_max, arr_left, arr_right, 2*i+2, arr_right[combo], A);
 	#pragma omp taskwait //only serves to make parent (non-recursive) function to wait
 }
