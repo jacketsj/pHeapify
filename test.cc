@@ -35,9 +35,8 @@ void runTests()
 {
 #if debug_sec
 	std::srand(0);
-#endif
 #else
-	std::srand(std::time);
+	std::srand(std::time(NULL));
 #endif
 	int num = 100;
 #if debug_sec

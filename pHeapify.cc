@@ -14,16 +14,48 @@ mini* pHeapify(mini* A, mini n)
 		return A;
 	}
 
+#if debug_sec
+	int* present = new int[omp_get_max_threads()];
+	omp_set_dynamic(false);
+	#pragma omp parallel
+	{
+		present[omp_get_thread_num()] = 1;
+	}
+	int total = 0;
+	for (int i = 0; i < omp_get_max_threads(); ++i)
+	{
+		total += present[i];
+	}
+	std::cout << "TOTAL = " << total << std::endl;
+#endif
+
+	//dynamic teams not supported
+	omp_set_dynamic(false);
+
+	omp_set_max_active_levels(5);
+
 	//number of combinations
 	biggy comboCount = exp(2, n);
 	
 	//calculate powers
 	biggy* powLookup = new biggy[n];
 	omp_set_num_threads(n);
+#if debug_sec
+	int* powIds = new int[n];
+	int numIds = 0;
+#endif
 	#pragma omp parallel
 	{
-		mini id = omp_get_thread_num();
+		mini id = n - 1 - omp_get_thread_num();
 		powLookup[id] = exp(2, id);
+#if debug_sec
+		powIds[id] = id;
+		++numIds;
+//		#pragma omp single
+//		{
+			std::cout << omp_get_num_threads() << " out of " << omp_get_max_threads() << std::endl;
+//		}
+#endif
 	}
 	
 	//find maxes
@@ -35,17 +67,19 @@ mini* pHeapify(mini* A, mini n)
 
 	#pragma omp parallel
 	{
-		biggy id = omp_get_thread_num();
+		biggy id = comboCount - 1 - omp_get_thread_num();
+		arr_max[comboCount - 1 - id] = max_loc(A, 0, n-1, id, powLookup).second;
 #if debug_sec
 		#pragma omp single
 		{
 			std::cout << id;
 		}
 #endif
-		arr_max[id] = max_loc(A, 0, n-1, id, powLookup).second;
 	}
 
 #if debug_sec
+	std::cout << numIds << std::endl;
+
 	std::cout << "arr_max = {";
 	for (int i = 0; i < comboCount; ++i)
 	{
@@ -55,7 +89,7 @@ mini* pHeapify(mini* A, mini n)
 	std::cout << "powLookup = {";
 	for (int i = 0; i < n; ++i)
 	{
-		std::cout << i << ":" << powLookup[i] << (i == n - 1 ? "}" : ",");
+		std::cout << powIds[i] << ":" << powLookup[i] << (i == n - 1 ? "}" : ",");
 	}
 	std::cout << std::endl;
 #endif
@@ -81,7 +115,7 @@ mini* pHeapify(mini* A, mini n)
 		mini lo = 0, hi = id;
 		while (hi > lo + 1)
 		{
-			mini half = (hi - lo) / 2;
+			mini half = (hi + lo) / 2;
 			if (powLookup[half] - 1 > roundedDown)
 			{
 				hi = half;
@@ -110,6 +144,10 @@ mini* pHeapify(mini* A, mini n)
 		//arr_selec[id] = selected(A, 0, n-1, id, powLookup).second;
 	}
 
+#if debug_sec
+	std::cout << "made it" << std::endl;
+#endif
+
 	//now do parallel recursion step to find final heap
 	mini* heap = new mini[n];
 	completeHeap(heap, n, arr_max, arr_left, arr_right, 0, comboCount-1);
@@ -119,9 +157,8 @@ mini* pHeapify(mini* A, mini n)
 //returns a^k
 biggy exp(mini am, mini km)
 {
-	biggy a = biggy(am), k = biggy(km);
+	biggy dub = biggy(am), k = biggy(km);
 	biggy ret = 1;
-	biggy dub = 2;
 	while (k > 0)
 	{
 		if (k % 2 == 1)
@@ -138,7 +175,7 @@ std::pair<mini,mini> max_loc(mini* A, mini lo, mini hi, biggy combo, biggy* powL
 {
 	//base cases
 	//if no more numbers, or this num is not included in combo
-	if (lo > hi || (lo == hi && (combo & powLookup[lo] != powLookup[lo])))
+	if (lo > hi || (lo == hi && ((combo & powLookup[lo]) != powLookup[lo])))
 	{
 		//return index of later non-number for priority
 		std::pair<mini,mini> ret(lowest, lo);
@@ -162,10 +199,16 @@ std::pair<mini,mini> max_loc(mini* A, mini lo, mini hi, biggy combo, biggy* powL
 	#pragma omp taskwait
 	if (left.first > right.first || (left.first == right.first && left.second < right.second))
 	{
+#if debug_sec
+		//std::cout << "left.first beats right.first: (" << left.first << "," << left.second << ") > (" << right.first << "," << right.second << ")" << std::endl;
+#endif
 		return left;
 	}
 	else
 	{
+#if debug_sec
+		//std::cout << "right.first beats left.first: (" << left.first << "," << left.second << ") < (" << right.first << "," << right.second << ")" << std::endl;
+#endif
 		return right;
 	}
 }
@@ -174,7 +217,7 @@ mini count(mini* A, mini lo, mini hi, biggy combo, biggy* powLookup)
 {
 	//base cases
 	//if no more numbers, or this num is not included in combo
-	if (lo > hi || (lo == hi && (combo & powLookup[lo] != powLookup[lo])))
+	if (lo > hi || (lo == hi && ((combo & powLookup[lo]) != powLookup[lo])))
 	{
 		return 0; //return index of later non-number for priority
 	}
