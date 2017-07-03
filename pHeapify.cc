@@ -116,11 +116,11 @@ mini* pHeapify(mini* A, mini n)
 
 		//round down to nearest power of two sub 1
 		//binary search
-		mini lo = 0, hi = roundedDown;
+		mini lo = 0, hi = arr_count[id];
 		while (hi > lo + 1)
 		{
-			mini half = (hi + lo) / 2;
-			if ((roundedDown & (powLookup[half] - 1)) == roundedDown)
+			mini half = (hi + lo) / 2 + (hi + lo) % 2;
+			if ((roundedDown & (powLookup[half] - 1)) != roundedDown)
 			{
 				hi = half;
 			}
@@ -129,7 +129,7 @@ mini* pHeapify(mini* A, mini n)
 				lo = half;
 			}
 		}
-		roundedDown = lo;
+		roundedDown = powLookup[lo] - 1;
 
 		mini rem = arr_count[id] - lo;
 		mini minrem = rem;
