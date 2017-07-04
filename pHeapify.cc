@@ -116,6 +116,7 @@ mini* pHeapify(mini* A, mini n)
 		mini roundedDown = (arr_count[id]-1)/2; 
 		
   
+		//TODO: Bug flag. Something is (probably) wrong with this code. Slower code available for debugging.
 		//round down to nearest power of two sub 1
 		//binary search
 		mini lo = 0, hi = arr_count[id];
@@ -138,22 +139,6 @@ mini* pHeapify(mini* A, mini n)
 			}
 #endif
 		}
-		/*
-		//prevent rounding error
-		if (hi - lo > 1)
-		{
-			for (int i = lo; i <= hi; ++i)
-			{
-				if (((roundedDown & (powLookup[i] - 1)) < roundedDown
-				&& (roundedDown & (powLookup[i+1] - 1)) == roundedDown))
-				{
-					lo = i;
-					hi = i+1;
-					break;
-				}
-			}
-		}
-		*/
 		//if we really should round down in the first place (not already a power of 2 sub 1)
 		if (roundedDown != powLookup[lo+1] - 1)
 		{
@@ -188,7 +173,13 @@ mini* pHeapify(mini* A, mini n)
 		mini lo = countToMid, hi = n;
 #if debug_sec
 		int testCount = 0;
+		if (arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
+		{
+			std::cout << "c2mid=" << countToMid << ",n-1=" << n-1 << ",powLookup[lo+1]=" << powLookup[lo+1]
+				<< ",arr_count[stuff]=" << arr_count[((powLookup[lo+1]-1) & id)] << ",id=" << id << std::endl; 
+		}
 #endif
+		//TODO: Bug flag. Something is wrong with this code.
 		while (hi > lo + 1 && arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
 		{
 #if debug_sec
