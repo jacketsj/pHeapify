@@ -104,22 +104,30 @@ mini* pHeapify(mini* A, mini n)
 	
 #if debug_sec
 	int* roundedDowns = new int[comboCount];
-	int* mids = new int[comboCount];
 #endif
+	int* mids = new int[comboCount];
 	omp_set_num_threads(comboCount);
 	
+
 	#pragma omp parallel
 	{
 		biggy id = omp_get_thread_num();
-		arr_count[id] = count(A, 0, n-1, id, powLookup);
+		arr_count[id] = count(0, n-1, id, powLookup);
 		mini roundedDown = (arr_count[id]-1)/2; 
-
+		
+  
 		//round down to nearest power of two sub 1
 		//binary search
 		mini lo = 0, hi = arr_count[id];
-		while (hi > lo + 1)
+		while (hi > lo + 1
+			&& !((roundedDown & (powLookup[lo] - 1)) != roundedDown
+				&& (roundedDown & (powLookup[lo+1] - 1)) == roundedDown))
 		{
-			mini half = (hi + lo) / 2 + (hi + lo) % 2;
+#if debug_sec
+			//temporary linear loop for debugging
+			++lo;
+#else
+			mini half = (hi + lo) / 2;
 			if ((roundedDown & (powLookup[half] - 1)) != roundedDown)
 			{
 				hi = half;
@@ -128,28 +136,95 @@ mini* pHeapify(mini* A, mini n)
 			{
 				lo = half;
 			}
+#endif
 		}
-		roundedDown = powLookup[lo] - 1;
-
-		mini rem = arr_count[id] - lo;
+		/*
+		//prevent rounding error
+		if (hi - lo > 1)
+		{
+			for (int i = lo; i <= hi; ++i)
+			{
+				if (((roundedDown & (powLookup[i] - 1)) < roundedDown
+				&& (roundedDown & (powLookup[i+1] - 1)) == roundedDown))
+				{
+					lo = i;
+					hi = i+1;
+					break;
+				}
+			}
+		}
+		*/
+		//if we really should round down in the first place (not already a power of 2 sub 1)
+		if (roundedDown != powLookup[lo+1] - 1)
+		{
+			roundedDown = powLookup[lo] - 1;
+		}
+		mini rem = arr_count[id] - lo - 1; //-1 for no more root
 		mini minrem = rem;
 		if (minrem > (roundedDown + 1))
 		{
 			minrem = (roundedDown + 1);
 		}
-		//last position in left subheap (or first in next with zero indeces)
-		mini mid = roundedDown + minrem;
+		//number of values on left subheap
+		mids[id] = roundedDown + minrem;
+#if debug_sec
+		roundedDowns[id] = roundedDown;
+#endif
+	}
+#if debug_sec
+	std::cout << "roundedDowns = {";
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << roundedDowns[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+#endif
+	std::cout << std::endl;
+	#pragma omp parallel
+	{
+		biggy id = omp_get_thread_num();
+		//last position in left subheap (or first in right with zero indeces)
+		//calculated by binary search on 
+		mini countToMid = mids[id];
+		mini lo = countToMid, hi = n;
+#if debug_sec
+		int testCount = 0;
+#endif
+		while (hi > lo + 1 && arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
+		{
+#if debug_sec
+			//std::cout << lo << std::endl;
+			//std::cout << "c2mid=" << countToMid << ",n-1=" << n-1 << ",powLookup[lo+1]=" << powLookup[lo+1]
+			//	<< ",arr_count[stuff]=" << arr_count[((powLookup[lo+1]-1) & id)] << ",id=" << id << std::endl; 
+			//break;
+#endif
+			mini half = (hi + lo) / 2;
+			if (arr_count[((powLookup[half+1]-1) & id)] >= countToMid)
+			{
+				hi = half;
+#if debug_sec
+				++testCount;
+#endif
+			}
+			else
+			{
+				lo = half;
+			}
+		}
+		mini midloc = lo;
+		if (arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
+		{
+#if debug_sec
+			std::cout << "it did the thing: " << testCount << "," << countToMid << hi << lo << std::endl;
+#endif
+			midloc = hi;
+		}
 		
 		biggy bigMaxPos = powLookup[arr_max[id]];
-		biggy leftMatches = powLookup[mid+1]-1;
+		biggy leftMatches = midloc-1;
 		arr_left[id] = id & leftMatches & (~bigMaxPos);
 		arr_right[id] = id & (~leftMatches) & (~bigMaxPos);
 		
 		//arr_selec[id] = selected(A, 0, n-1, id, powLookup).second;
-#if debug_sec
-		roundedDowns[id] = roundedDown;
-		mids[id] = mid;
-#endif
 	}
 
 #if debug_sec
@@ -169,12 +244,6 @@ mini* pHeapify(mini* A, mini n)
 	for (int i = 0; i < comboCount; ++i)
 	{
 		std::cout << arr_count[i] << (i == comboCount - 1 ? "}" : ",");
-	}
-	std::cout << std::endl;
-	std::cout << "roundedDowns = {";
-	for (int i = 0; i < comboCount; ++i)
-	{
-		std::cout << roundedDowns[i] << (i == comboCount - 1 ? "}" : ",");
 	}
 	std::cout << std::endl;
 	std::cout << "mids = {";
@@ -250,7 +319,8 @@ std::pair<mini,mini> max_loc(mini* A, mini lo, mini hi, biggy combo, biggy* powL
 	}
 }
 
-mini count(mini* A, mini lo, mini hi, biggy combo, biggy* powLookup)
+//bool determines if this returns the id of the legal values or the count of them
+mini count(mini lo, mini hi, biggy combo, biggy* powLookup)
 {
 	//base cases
 	//if no more numbers, or this num is not included in combo
@@ -267,11 +337,11 @@ mini count(mini* A, mini lo, mini hi, biggy combo, biggy* powLookup)
 
 	//first=val, second=loc
 	mini left, right;
-	#pragma omp task untied shared(A, lo, hi, combo, left)
+	#pragma omp task untied shared(lo, hi, combo, left)
 	{
-		left = count(A, lo, (hi + lo) / 2, combo, powLookup);
+		left = count(lo, (hi + lo) / 2, combo, powLookup);
 	}
-	right = count(A, (hi + lo) / 2 + 1, hi, combo, powLookup);
+	right = count((hi + lo) / 2 + 1, hi, combo, powLookup);
 	#pragma omp taskwait
 	return left + right;
 }

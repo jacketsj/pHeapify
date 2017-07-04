@@ -40,13 +40,13 @@ void runTests()
 #endif
 	int num = 100;
 #if debug_sec
-	num = 5;
+	num = 6;
 #endif
 	for (int i = 0; i < num; ++i)
 	{
 		int size = 15;
 #if debug_sec
-		size = 4;
+		size = 6;
 #endif
 		int n = rand() % size;
 		int* notHeap = generateRandomDistinct(n, size * 2, 0);
@@ -140,7 +140,7 @@ int* generateRandomDistinct(int n, int max, int min)
 		}
 		if (good)
 		{
-			ins[++c] = p;
+			ins[c++] = p;
 		}
 	}
 	return ins;
