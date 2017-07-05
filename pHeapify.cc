@@ -5,6 +5,7 @@
 
 #if debug_sec
 #include <iostream>
+#include <cassert>
 #endif
 
 mini* pHeapify(mini* A, mini n)
@@ -119,7 +120,42 @@ mini* pHeapify(mini* A, mini n)
 		//TODO: Bug flag. Something is (probably) wrong with this code. Slower code available for debugging.
 		//round down to nearest power of two sub 1
 		//binary search
-		mini lo = 0, hi = arr_count[id];
+		mini lo = 0, hi = sizeof (mini) * 8; //hi should be number of bits or just n
+		while (powLookup[hi] - 1 >= roundedDown)
+		{
+			if (hi == lo + 1)
+			{
+				hi = lo;
+				//equivalently, use break
+				//continue used for offensive testing
+				continue;
+			}
+			mini half = (hi + lo) / 2;
+			if (powLookup[half] - 1 >= roundedDown)
+			{
+#if debug_sec
+				//this should never fail
+				assert(hi > half);
+#endif
+				hi = half;
+			}
+			else
+			{
+				lo = half;
+			}
+		}
+#if debug_sec
+		assert(((powLookup[lo+1]-1) & roundedDown) == roundedDown);
+		assert(((powLookup[lo]-1) & roundedDown) != roundedDown || roundedDown == 0);
+#endif
+		//if we need to round down...
+		if (powLookup[lo+1] - 1 > roundedDown)
+		{
+			//then do so
+			roundedDown = powLookup[lo] - 1;
+		}
+
+		/*
 		while (hi > lo + 1
 			&& !((roundedDown & (powLookup[lo] - 1)) != roundedDown
 				&& (roundedDown & (powLookup[lo+1] - 1)) == roundedDown))
@@ -127,6 +163,10 @@ mini* pHeapify(mini* A, mini n)
 #if debug_sec
 			//temporary linear loop for debugging
 			++lo;
+			if (id == 7)
+			{
+				std::cout << "it ran" << std::endl; //no it didn't :(
+			}
 #else
 			mini half = (hi + lo) / 2;
 			if ((roundedDown & (powLookup[half] - 1)) != roundedDown)
@@ -143,7 +183,9 @@ mini* pHeapify(mini* A, mini n)
 		if (roundedDown != powLookup[lo+1] - 1)
 		{
 			roundedDown = powLookup[lo] - 1;
+			++lo;
 		}
+		*/
 		mini rem = arr_count[id] - lo - 1; //-1 for no more root
 		mini minrem = rem;
 		if (minrem > (roundedDown + 1))
@@ -153,6 +195,10 @@ mini* pHeapify(mini* A, mini n)
 		//number of values on left subheap
 		mids[id] = roundedDown + minrem;
 #if debug_sec
+		if (id == 7)
+		{
+			std::cout << "MINREM=" << minrem << ",REM=" << rem << std::endl;
+		}
 		roundedDowns[id] = roundedDown;
 #endif
 	}
@@ -162,11 +208,14 @@ mini* pHeapify(mini* A, mini n)
 	{
 		std::cout << roundedDowns[i] << (i == comboCount - 1 ? "}" : ",");
 	}
-#endif
 	std::cout << std::endl;
+#endif
+
+
 	#pragma omp parallel
 	{
 		biggy id = omp_get_thread_num();
+		biggy bigMaxPos = powLookup[arr_max[id]];
 		//last position in left subheap (or first in right with zero indeces)
 		//calculated by binary search on 
 		mini countToMid = mids[id];
@@ -180,20 +229,20 @@ mini* pHeapify(mini* A, mini n)
 		if (arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
 		{
 			std::cout << "c2mid=" << countToMid << ",n-1=" << n-1 << ",powLookup[lo+1]=" << powLookup[lo+1]
-				<< ",arr_count[stuff]=" << arr_count[((powLookup[lo+1]-1) & id)] << ",id=" << id << std::endl; 
+				<< ",arr_count[stuff]=" << arr_count[((powLookup[lo+1]-1) & id & (~bigMaxPos))] << ",id=" << id << std::endl; 
 		}
 #endif
 		//TODO: Bug flag. Something is wrong with this code.
 #if debug_sec
 		//slower test code
 		//offensive programming practice revealed that the orinal generalized test always failed
-		while (arr_count[((powLookup[lo+1]-1) & id)] < (n-countToMid-1))
+		while (arr_count[((powLookup[lo+1]-1) & id & (~bigMaxPos))] < countToMid)
 		{
 			++lo;
 			--hi; //just fixing Wall for debug
 			++testCount;
 		}
-		mini midloc = powLookup[lo]-1;
+		biggy midloc = powLookup[lo]-1;
 #endif
 		/*
 		while (hi > lo + 1 && arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
@@ -217,7 +266,7 @@ mini* pHeapify(mini* A, mini n)
 				lo = half;
 			}
 		}
-		mini midloc = lo;
+		biggy midloc = lo;
 		if (arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
 		{
 #if debug_sec
@@ -227,7 +276,6 @@ mini* pHeapify(mini* A, mini n)
 		}
 		*/
 		
-		biggy bigMaxPos = powLookup[arr_max[id]];
 		biggy leftMatches = midloc;
 		arr_left[id] = id & leftMatches & (~bigMaxPos);
 		arr_right[id] = id & (~leftMatches) & (~bigMaxPos);
