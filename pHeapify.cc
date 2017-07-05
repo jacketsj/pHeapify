@@ -170,7 +170,11 @@ mini* pHeapify(mini* A, mini n)
 		//last position in left subheap (or first in right with zero indeces)
 		//calculated by binary search on 
 		mini countToMid = mids[id];
-		mini lo = countToMid, hi = n;
+		mini lo = n-countToMid-1, hi = n;
+		if (lo < 0)
+		{
+			lo = 0;
+		}
 #if debug_sec
 		int testCount = 0;
 		if (arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
@@ -180,6 +184,18 @@ mini* pHeapify(mini* A, mini n)
 		}
 #endif
 		//TODO: Bug flag. Something is wrong with this code.
+#if debug_sec
+		//slower test code
+		//offensive programming practice revealed that the orinal generalized test always failed
+		while (arr_count[((powLookup[lo+1]-1) & id)] < (n-countToMid-1))
+		{
+			++lo;
+			--hi; //just fixing Wall for debug
+			++testCount;
+		}
+		mini midloc = powLookup[lo]-1;
+#endif
+		/*
 		while (hi > lo + 1 && arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
 		{
 #if debug_sec
@@ -209,9 +225,10 @@ mini* pHeapify(mini* A, mini n)
 #endif
 			midloc = hi;
 		}
+		*/
 		
 		biggy bigMaxPos = powLookup[arr_max[id]];
-		biggy leftMatches = midloc-1;
+		biggy leftMatches = midloc;
 		arr_left[id] = id & leftMatches & (~bigMaxPos);
 		arr_right[id] = id & (~leftMatches) & (~bigMaxPos);
 		
