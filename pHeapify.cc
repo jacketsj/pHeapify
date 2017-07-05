@@ -186,7 +186,7 @@ mini* pHeapify(mini* A, mini n)
 			++lo;
 		}
 		*/
-		mini rem = arr_count[id] - lo - 1; //-1 for no more root
+		mini rem = arr_count[id] - 2*roundedDown - 1; //-1 for no more root
 		mini minrem = rem;
 		if (minrem > (roundedDown + 1))
 		{
@@ -277,8 +277,8 @@ mini* pHeapify(mini* A, mini n)
 		*/
 		
 		biggy leftMatches = midloc;
-		arr_left[id] = id & leftMatches & (~bigMaxPos);
-		arr_right[id] = id & (~leftMatches) & (~bigMaxPos);
+		arr_right[id] = id & leftMatches & (~bigMaxPos);
+		arr_left[id] = id & (~leftMatches) & (~bigMaxPos);
 		
 		//arr_selec[id] = selected(A, 0, n-1, id, powLookup).second;
 	}
