@@ -5,6 +5,7 @@
 
 #if debug_sec
 #include <iostream>
+#include <string>
 #include <cassert>
 #endif
 
@@ -105,6 +106,7 @@ mini* pHeapify(mini* A, mini n)
 	
 #if debug_sec
 	int* roundedDowns = new int[comboCount];
+	std::string* errors = new std::string[comboCount];
 #endif
 	int* mids = new int[comboCount];
 	omp_set_num_threads(comboCount);
@@ -120,8 +122,10 @@ mini* pHeapify(mini* A, mini n)
 		//TODO: Bug flag. Something is (probably) wrong with this code. Slower code available for debugging.
 		//round down to nearest power of two sub 1
 		//binary search
-		mini lo = 0, hi = sizeof (mini) * 8; //hi should be number of bits or just n
-		while (powLookup[hi] - 1 >= roundedDown)
+
+		//choice of hi will have to be changed if size of mini and biggy is changed
+		mini lo = 0, hi = n; //hi should be number of bits or just n, due to lack of table
+		while (powLookup[hi] - 1 >= roundedDown && roundedDown > 0)
 		{
 			if (hi == lo + 1)
 			{
@@ -135,6 +139,9 @@ mini* pHeapify(mini* A, mini n)
 			{
 #if debug_sec
 				//this should never fail
+				assert(lo >= 0);
+				assert(hi >= lo);
+				assert(hi > lo);
 				assert(hi > half);
 #endif
 				hi = half;
@@ -145,8 +152,17 @@ mini* pHeapify(mini* A, mini n)
 			}
 		}
 #if debug_sec
-		assert(((powLookup[lo+1]-1) & roundedDown) == roundedDown);
-		assert(((powLookup[lo]-1) & roundedDown) != roundedDown || roundedDown == 0);
+		//if (((powLookup[lo+1]-1) & roundedDown) != roundedDown)
+		//{
+		//	errors[id] += "lo=";
+		//	errors[id] += lo;
+		//	errors[id] += ",roundedDown=";
+		//	errors[id] += roundedDown;
+		//	errors[id] += ",hi=";
+		//	errors[id] += hi;
+		//}
+		assert(((powLookup[lo+1]-1) & roundedDown) == roundedDown || roundedDown <= 0);
+		assert(((powLookup[lo]-1) & roundedDown) != roundedDown || roundedDown <= 0);
 #endif
 		//if we need to round down...
 		if (powLookup[lo+1] - 1 > roundedDown)
@@ -207,6 +223,13 @@ mini* pHeapify(mini* A, mini n)
 	for (int i = 0; i < comboCount; ++i)
 	{
 		std::cout << roundedDowns[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+	std::cout << std::endl;
+
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << errors[i] << ", ";
+		assert(errors[i] == "");
 	}
 	std::cout << std::endl;
 #endif

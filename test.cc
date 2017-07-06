@@ -46,7 +46,7 @@ void runTests()
 	{
 		int size = 15;
 #if debug_sec
-		size = 6;
+		size = 7;
 #endif
 		int n = rand() % size;
 		int* notHeap = generateRandomDistinct(n, size * 2, 0);
