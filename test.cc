@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <ctime>
+#include <cstdlib>
 #include "pHeapify.h"
 
 void runTests();
@@ -16,14 +17,25 @@ int main(int argc, char* argv[])
 	if (argc > 1)
 	{
 		int* heap = new int[argc-1]();
-		std::string inp(*argv+1);
-		std::string num;
-		std::stringstream todo(inp);
-		for (int i = 0; todo >> num; ++i)
+		int* notHeap = new int[argc-1]();
+		//std::string inp(*argv+1);
+		//std::string num;
+		//std::stringstream todo(inp);
+		for (int i = 0; i < argc-1/* && todo >> num*/; ++i)
 		{
-			heap[i] = std::stoi(num);
+			heap[i] = std::atoi(argv[1+i]);
+			notHeap[i] = heap[i];
 		}
-		pHeapify(heap, argc-1);
+		heap = pHeapify(heap, argc-1);
+		std::cout << "heapify({";
+		for (int i = 0; i < argc-1; ++i)
+		{
+			std::cout << notHeap[i] << (i == argc-2 ? "})={" : ",");
+		}
+		for (int i = 0; i < argc-1; ++i)
+		{
+			std::cout << heap[i] << (i == argc-2 ? "}\n" : ",");
+		}
 	}
 	else
 	{

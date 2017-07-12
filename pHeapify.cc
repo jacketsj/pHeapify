@@ -120,12 +120,12 @@ mini* pHeapify(mini* A, mini n)
 		
   
 		//TODO: Bug flag. Something is (probably) wrong with this code. Slower code available for debugging.
-		//round down to nearest power of two sub 1
+		//round down to nearest power of two sub 1 (binary search finds the round up, then check for equality case)
 		//binary search
 
 		//choice of hi will have to be changed if size of mini and biggy is changed
 		mini lo = 0, hi = n; //hi should be number of bits or just n, due to lack of table
-		while (!(powLookup[lo+1] - 1 >= roundedDown && powLookup[lo] - 1 < roundedDown) && roundedDown != 0)
+		while (!(powLookup[lo+1] - 1 >= roundedDown && powLookup[lo] - 1 < roundedDown) && roundedDown > 0)
 		{
 			if (hi == lo + 1)
 			{
@@ -203,10 +203,18 @@ mini* pHeapify(mini* A, mini n)
 		}
 		*/
 		mini rem = arr_count[id] - 2*roundedDown - 1; //-1 for no more root
-		mini minrem = rem;
-		if (minrem > (roundedDown + 1))
+		if (rem == -1)
 		{
-			minrem = (roundedDown + 1);
+			rem = 0;
+		}
+		mini minrem = rem;
+		//if the remainder surpasses the halfway point
+		if (minrem > ((arr_count[id] - rem) % 2) + (arr_count[id] - rem) / 2)
+		//if (minrem > (roundedDown + 1))
+		{
+			//make it the count before the halfway point
+			//minrem = (roundedDown + 1);
+			minrem = ((arr_count[id] - rem) % 2) + (arr_count[id] - rem) / 2;
 		}
 		//number of values on left subheap
 		mids[id] = roundedDown + minrem;
@@ -232,6 +240,7 @@ mini* pHeapify(mini* A, mini n)
 		assert(errors[i] == "");
 	}
 	std::cout << std::endl;
+	int* ACounts = new int[comboCount];
 #endif
 
 
@@ -242,7 +251,9 @@ mini* pHeapify(mini* A, mini n)
 		//last position in left subheap (or first in right with zero indeces)
 		//calculated by binary search on 
 		mini countToMid = mids[id];
-		mini lo = n-countToMid-1, hi = n;
+		//making lo n-countToMid-1 vs n-countToMid changes which tests pass
+		mini lo = 0, hi = n;
+		//mini lo = n-countToMid-1, hi = n;
 		if (lo < 0)
 		{
 			lo = 0;
@@ -258,14 +269,18 @@ mini* pHeapify(mini* A, mini n)
 		//TODO: Bug flag. Something is wrong with this code.
 #if debug_sec
 		//slower test code
-		//offensive programming practice revealed that the orinal generalized test always failed
+		//offensive programming practice revealed that the original generalized test always failed
 		while (arr_count[((powLookup[lo+1]-1) & id & (~bigMaxPos))] < countToMid)
+		//while (arr_count[((powLookup[n-hi]-1) & id & (~bigMaxPos))] < countToMid)
 		{
 			++lo;
 			--hi; //just fixing Wall for debug
 			++testCount;
 		}
+		//using lo vs using n-lo-1 changes which case fails in the end??
+		ACounts[id] = lo;
 		biggy midloc = powLookup[lo]-1;
+		//biggy midloc = powLookup[n-hi-1]-1;
 #endif
 		/*
 		while (hi > lo + 1 && arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
@@ -300,8 +315,8 @@ mini* pHeapify(mini* A, mini n)
 		*/
 		
 		biggy leftMatches = midloc;
-		arr_right[id] = id & leftMatches & (~bigMaxPos);
-		arr_left[id] = id & (~leftMatches) & (~bigMaxPos);
+		arr_left[id] = id & leftMatches & (~bigMaxPos);
+		arr_right[id] = id & (~leftMatches) & (~bigMaxPos);
 		
 		//arr_selec[id] = selected(A, 0, n-1, id, powLookup).second;
 	}
@@ -329,6 +344,12 @@ mini* pHeapify(mini* A, mini n)
 	for (int i = 0; i < comboCount; ++i)
 	{
 		std::cout << mids[i] << (i == comboCount - 1 ? "}" : ",");
+	}
+	std::cout << std::endl;
+	std::cout << "ACounts = {";
+	for (int i = 0; i < comboCount; ++i)
+	{
+		std::cout << ACounts[i] << (i == comboCount - 1 ? "}" : ",");
 	}
 	std::cout << std::endl;
 #endif
