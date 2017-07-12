@@ -125,7 +125,7 @@ mini* pHeapify(mini* A, mini n)
 
 		//choice of hi will have to be changed if size of mini and biggy is changed
 		mini lo = 0, hi = n; //hi should be number of bits or just n, due to lack of table
-		while (powLookup[hi] - 1 >= roundedDown && roundedDown > 0)
+		while (!(powLookup[lo+1] - 1 >= roundedDown && powLookup[lo] - 1 < roundedDown) && roundedDown != 0)
 		{
 			if (hi == lo + 1)
 			{
@@ -161,8 +161,8 @@ mini* pHeapify(mini* A, mini n)
 		//	errors[id] += ",hi=";
 		//	errors[id] += hi;
 		//}
-		assert(((powLookup[lo+1]-1) & roundedDown) == roundedDown || roundedDown <= 0);
-		assert(((powLookup[lo]-1) & roundedDown) != roundedDown || roundedDown <= 0);
+		assert(powLookup[lo+1]-1 >= roundedDown || roundedDown <= 0);
+		assert(powLookup[lo]-1 < roundedDown || roundedDown <= 0);
 #endif
 		//if we need to round down...
 		if (powLookup[lo+1] - 1 > roundedDown)
