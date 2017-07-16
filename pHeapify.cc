@@ -262,19 +262,40 @@ mini* pHeapify(mini* A, mini n)
 		int testCount = 0;
 		if (arr_count[((powLookup[lo+1]-1) & id)] < countToMid)
 		{
-			std::cout << "c2mid=" << countToMid << ",n-1=" << n-1 << ",powLookup[lo+1]=" << powLookup[lo+1]
-				<< ",arr_count[stuff]=" << arr_count[((powLookup[lo+1]-1) & id & (~bigMaxPos))] << ",id=" << id << std::endl; 
+			//std::cout << "c2mid=" << countToMid << ",n-1=" << n-1 << ",powLookup[lo+1]=" << powLookup[lo+1]
+			//	<< ",arr_count[stuff]=" << arr_count[((powLookup[lo+1]-1) & id & (~bigMaxPos))] << ",id=" << id << std::endl; 
 		}
 #endif
 		//TODO: Bug flag. Something is wrong with this code.
 #if debug_sec
 		//slower test code
 		//offensive programming practice revealed that the original generalized test always failed
+		//working debug code (linear time)
+		/*
 		while (arr_count[((powLookup[lo]-1) & id & (~bigMaxPos))] < countToMid)
 		//while (arr_count[((powLookup[n-hi]-1) & id & (~bigMaxPos))] < countToMid)
 		{
 			++lo;
 			--hi; //just fixing Wall for debug
+			++testCount;
+		}
+		*/
+		while (arr_count[((powLookup[lo]-1) & id & (~bigMaxPos))] < countToMid)
+		{
+			mini half = (hi + lo) / 2;
+			if (lo + 1 >= hi)
+			{
+				lo = hi = lo + 1;
+				break;
+			}
+			if (arr_count[((powLookup[half]-1) & id & (~bigMaxPos))] >= countToMid)
+			{
+				hi = half;
+			}
+			else
+			{
+				lo = half;
+			}
 			++testCount;
 		}
 		//using lo vs using n-lo-1 changes which case fails in the end??
