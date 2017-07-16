@@ -270,7 +270,7 @@ mini* pHeapify(mini* A, mini n)
 #if debug_sec
 		//slower test code
 		//offensive programming practice revealed that the original generalized test always failed
-		while (arr_count[((powLookup[lo+1]-1) & id & (~bigMaxPos))] < countToMid)
+		while (arr_count[((powLookup[lo]-1) & id & (~bigMaxPos))] < countToMid)
 		//while (arr_count[((powLookup[n-hi]-1) & id & (~bigMaxPos))] < countToMid)
 		{
 			++lo;
