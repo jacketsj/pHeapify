@@ -3,7 +3,6 @@
 #include <utility>
 #include <climits>
 #include "omp.h"
-#define debug_sec true
 
 //temp for writing: biggy for int256_t, mini for int8_t
 //since these sizes are not natively supported by C++ or by OpenMP, ints can be used instead with caution

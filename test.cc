@@ -45,21 +45,11 @@ int main(int argc, char* argv[])
 
 void runTests()
 {
-#if debug_sec
-	std::srand(0);
-#else
 	std::srand(std::time(NULL));
-#endif
-	int num = 100;
-#if debug_sec
-	num = 6;
-#endif
+	int num = 10;
 	for (int i = 0; i < num; ++i)
 	{
-		int size = 15;
-#if debug_sec
-		size = 10;
-#endif
+		int size = 10; //OpenMP cannot create enough threads for more
 		int n = rand() % size;
 		int* notHeap = generateRandomDistinct(n, size * 2, 0);
 		int* heap = pHeapify(notHeap, n);
