@@ -1,0 +1,130 @@
+\documentclass[letterpaper, reqno, 11pt]{article}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{color,latexsym,amsmath,amssymb}
+\usepackage{fancyhdr}
+\usepackage{changepage}
+\usepackage{algorithm2e}
+\SetKwComment{Comment}{}{}
+\pagestyle{fancy}
+\newcommand{\ttitle}{Parallel Heapify}
+\newcommand{\tname}{jacketsj}
+\lhead{\ttitle}
+\rhead{\tname}
+\cfoot{\thepage}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\NN}{\mathbb{N}}
+
+\begin{document}
+
+\title{\ttitle}
+\author{\tname}
+
+\maketitle
+
+\section*{Overview}
+
+\section*{Pseudocode}
+
+\subsection*{Parallel Heapify}
+\begin{algorithm}[H]
+\caption{pHeapify}
+\KwData{Integer Array A[]}
+\KwResult{Integer Array meeting the Heap Properties}
+\tcp{comment}
+statement\tcp*{comment}
+\If(\tcp*[f]{comment}){test}
+{
+	do things\;
+}
+\Return stuff\;
+\end{algorithm}
+
+\subsection*{Exponent}
+\begin{algorithm}[H]
+\caption{exp}
+\KwData{Integer $b$ (base, passed by value), Integer $k$ (exponent, passed by value)}
+\KwResult{$b^k$}
+\tcp{Simple doubling algorithm}
+int $r:=0$\tcp*{Return value}
+\While{$k>0$}
+{
+	\If{$k\nmid2$}
+	{
+		$r:=r\times b$\;
+	}
+	$k:=\left\lfloor\frac{k}{2}\right\rfloor$\;
+	$b:=b^2$\;
+}
+\Return $r$\;
+\end{algorithm}
+
+\subsection*{Location of Maximum}
+\begin{algorithm}[H]
+\caption{max\_loc}
+\KwData{Integer Array $A$, int $f$ (partition low index), int $h$ (partition high index),
+		int $c$ (combination number), Array $P$ (powers of two)}
+\KwResult{(value,index)}
+\If(\tcp*{No more valid values for this combination}){$f>h\lor(f=h\land c\&P[f]\neq P[f])$}
+{
+	\Return $(-\infty,\infty)$\;
+}
+\If{$h=f$}
+{
+	\Return $(A[f],f)$\;
+}
+\tcp*{Divide and Conquer}
+Create int left, right\;
+\tcp*{Recurse in Parallel}
+\begin{description}
+	\item{(left)} $left:=Recurse(A,f,f+\left\lfloor\frac{f+h}{2}\right\rfloor,c,P)$\;
+	\item{(right)} $right:=Recurse(A,f+\left\lfloor\frac{f+h}{2}\right\rfloor+1,h,c,P)$\;
+\end{description}
+\If{$left.value=right.value$}
+{
+	\eIf{$left.index<right.index$}
+	{
+		\Return $left$\;
+	}
+	{
+		\Return $right$\;
+	}
+}
+
+\If{$left.value>right.value$}
+{
+	\Return $left$\;
+}
+\Return $right$\;
+\end{algorithm}
+
+\subsection*{Count}
+\begin{algorithm}[H]
+\caption{count}
+\KwData{int $f$ (partition low index), int $h$ (partition high index),
+			int $c$ (combination number), Array $P$ (powers of two)}
+\KwResult{int (count)}
+\If(\tcp*{No more valid values for this combination}){$f>h\lor(f=h\land c\&P[f]\neq P[f])$}
+{
+	\Return 0\;
+}
+\If{$h=f$}
+{
+	\Return 1\;
+}
+Create int left, right\;
+Recurse in Parallel:
+\begin{description}
+	\item{(left)} $left:=Recurse(f,f+\left\lfloor\frac{f+h}{2}\right\rfloor,c,P)$\;
+	\item{(right)} $right:=Recurse(f+\left\lfloor\frac{f+h}{2}\right\rfloor+1,h,c,P)$\;
+\end{description}
+\Return $left+right$\;
+\end{algorithm}
+
+\section*{Proof of Correctness}
+
+\section*{Proof of Runtime}
+
+\end{document}
+
