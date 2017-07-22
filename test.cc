@@ -16,17 +16,15 @@ int main(int argc, char* argv[])
 {
 	if (argc > 1)
 	{
-		int* heap = new int[argc-1]();
-		int* notHeap = new int[argc-1]();
+		int *heap, *notHeap = new int[argc-1];
 		//std::string inp(*argv+1);
 		//std::string num;
 		//std::stringstream todo(inp);
 		for (int i = 0; i < argc-1/* && todo >> num*/; ++i)
 		{
-			heap[i] = std::atoi(argv[1+i]);
-			notHeap[i] = heap[i];
+			notHeap[i] = std::atoi(argv[1+i]);
 		}
-		heap = pHeapify(heap, argc-1);
+		heap = pHeapify(notHeap, argc-1);
 		std::cout << "heapify({";
 		for (int i = 0; i < argc-1; ++i)
 		{
@@ -36,6 +34,9 @@ int main(int argc, char* argv[])
 		{
 			std::cout << heap[i] << (i == argc-2 ? "}\n" : ",");
 		}
+
+		delete[] heap;
+		delete[] notHeap;
 	}
 	else
 	{
@@ -73,6 +74,9 @@ void runTests()
 			std::cout << heap[i] << (i == n-1 ? "}" : ",");
 		}
 		std::cout << std::endl;
+
+		delete[] heap;
+		delete[] notHeap;
 	}
 }
 

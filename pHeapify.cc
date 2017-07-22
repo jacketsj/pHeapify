@@ -7,7 +7,13 @@ mini* pHeapify(mini* A, mini n)
 {
 	if (n <= 1)
 	{
-		return A;
+		//need to be consistent with pointer counts in base case
+		mini* A0 = new mini[n];
+		if (n == 1)
+		{
+			A0[0] = A[0];
+		}
+		return A0;
 	}
 
 	//dynamic teams not supported
@@ -155,23 +161,34 @@ mini* pHeapify(mini* A, mini n)
 	//now do parallel recursion step to find final heap
 	mini* heap = new mini[n];
 	completeHeap(heap, n, arr_max, arr_left, arr_right, 0, comboCount-1, A);
+
+	//clean temp memory
+	delete[] powLookup;
+	delete[] arr_max;
+	delete[] arr_count;
+	delete[] arr_left;
+	delete[] arr_right;
+	delete[] mids;
+
 	return heap;
 }
 
 //returns a^k
 biggy exp(mini am, mini km)
 {
-	biggy dub = biggy(am), k = biggy(km);
+	biggy *dub = new biggy(am), *k = new biggy(km);
 	biggy ret = 1;
-	while (k > 0)
+	while (*k > 0)
 	{
-		if (k % 2 == 1)
+		if (*k % 2 == 1)
 		{
-			ret *= dub;
+			ret *= *dub;
 		}
-		k /= 2;
-		dub *= dub;
+		*k /= 2;
+		*dub *= *dub;
 	}
+	delete dub;
+	delete k;
 	return ret;
 }
 
