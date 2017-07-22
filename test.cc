@@ -6,6 +6,7 @@
 #include "pHeapify.h"
 
 void runTests();
+void printResults(int *heap, int *notHeap, int n);
 int* generateRandomDistinct(int n, int max, int min);
 bool verifyAnswer(int* in, int* out, int n);
 bool verifyHeap(int* out, int n);
@@ -25,15 +26,7 @@ int main(int argc, char* argv[])
 			notHeap[i] = std::atoi(argv[1+i]);
 		}
 		heap = pHeapify(notHeap, argc-1);
-		std::cout << "heapify({";
-		for (int i = 0; i < argc-1; ++i)
-		{
-			std::cout << notHeap[i] << (i == argc-2 ? "})={" : ",");
-		}
-		for (int i = 0; i < argc-1; ++i)
-		{
-			std::cout << heap[i] << (i == argc-2 ? "}\n" : ",");
-		}
+		printResults(heap, notHeap, argc-1);
 
 		delete[] heap;
 		delete[] notHeap;
@@ -64,20 +57,26 @@ void runTests()
 			std::cout << "Test failed:";
 			eq = "!=";
 		}
-		std::cout << " heapify({";
-		for (int i = 0; i < n; ++i)
-		{
-			std::cout << notHeap[i] << (i == n-1 ? "})" + eq + "{" : ",");
-		}
-		for (int i = 0; i < n; ++i)
-		{
-			std::cout << heap[i] << (i == n-1 ? "}" : ",");
-		}
-		std::cout << std::endl;
+		printResults(heap, notHeap, n);
 
 		delete[] heap;
 		delete[] notHeap;
 	}
+}
+
+void printResults(int *heap, int *notHeap, int n)
+{
+	std::cout << " heapify({";
+	for (int i = 0; i < n; ++i)
+	{
+		std::cout << notHeap[i] << (i == n-1 ? "" : ",");
+	}
+	std::cout << "})={";
+	for (int i = 0; i < n; ++i)
+	{
+		std::cout << heap[i] << (i == n-1 ? "" : ",");
+	}
+	std::cout << "}" << std::endl;
 }
 
 bool verifyAnswer(int* in, int* out, int n)
