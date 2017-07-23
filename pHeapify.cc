@@ -256,7 +256,7 @@ mini count(mini lo, mini hi, biggy combo, biggy* powLookup)
 }
 
 void completeHeap(mini* heap, mini n, mini* arr_max, biggy* arr_left,
-			biggy* arr_right, mini i, biggy combo, int* A)
+			biggy* arr_right, mini i, biggy combo, mini* A)
 {
 	if (i > n || combo == 0)
 	{
