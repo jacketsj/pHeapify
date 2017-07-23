@@ -103,7 +103,7 @@ Create int left, right\;
 \begin{algorithm}[H]
 \caption{count}
 \KwData{int $f$ (partition low index), int $h$ (partition high index),
-			int $c$ (combination number), Array $P$ (powers of two)}
+		int $c$ (combination number), Array $P$ (powers of two)}
 \KwResult{int (count)}
 \If(\tcp*{No more valid values for this combination}){$f>h\lor(f=h\land c\&P[f]\neq P[f])$}
 {
@@ -120,6 +120,27 @@ Recurse in Parallel:
 	\item{(right)} $right:=Recurse(f+\left\lfloor\frac{f+h}{2}\right\rfloor+1,h,c,P)$\;
 \end{description}
 \Return $left+right$\;
+\end{algorithm}
+
+\subsection*{Completing the Heap}
+\begin{algorithm}[H]
+\caption{CompleteHeap}
+\KwData{Array ref $H$, int $n$ (size), Array $arr\_max$,
+		Array $arr\_left$, Array $arr\_right$,
+		int $i$ (index), int $c$ (combination number), Array $A$}
+\KwResult{int (count)}
+\If(\tcp*{Beyond heap bounds or empty combination}){$i>n\lor c=0$}
+{
+	\Return 0\;
+}
+$H[i]:=A[arr\_max[c]]$\tcp*{Add maximum remaining to heap}
+Recurse in Parallel:
+\begin{description}
+	\item{(left)} $left:=Recurse(H, n, arr\_max, arr\_left, arr\_right,
+			2i+1, arr\_left[c], A)$\;
+	\item{(right)} $right:=Recurse(H, n, arr\_max, arr\_left, arr\_right,
+			2i+1, arr\_right[c], A)$\;
+\end{description}
 \end{algorithm}
 
 \section*{Proof of Correctness}
