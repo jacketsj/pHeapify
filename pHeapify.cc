@@ -37,9 +37,7 @@ mini* pHeapify(mini* A, mini n)
 	}
 	
 	//find maxes:
-
-	//stores indeces
-	mini* arr_max = new mini[comboCount];
+	mini* arr_max = new mini[comboCount]; //stores indeces
 	
 	omp_set_num_threads(comboCount);
 
@@ -67,10 +65,7 @@ mini* pHeapify(mini* A, mini n)
 		arr_count[id] = count(0, n-1, id, powLookup);
 		mini roundedDown = (arr_count[id]-1)/2; 
 		
-  
-		//TODO: Bug flag. Something is (probably) wrong with this code. Slower code available for debugging.
-		//round down to nearest power of two sub 1 (binary search finds the round up, then check for equality case)
-		//binary search
+		//round down to nearest power of two sub 1 (binary search finds the round up, then check for equality case) with binary search
 
 		//choice of hi will have to be changed if size of mini and biggy is changed
 		mini lo = 0, hi = n; //hi should be number of bits or just n, due to lack of table
@@ -111,7 +106,6 @@ mini* pHeapify(mini* A, mini n)
 		//if (minrem > (roundedDown + 1))
 		{
 			//make it the count before the halfway point
-			//minrem = (roundedDown + 1);
 			minrem = ((arr_count[id] - rem) % 2) + (arr_count[id] - rem) / 2;
 		}
 		//number of values on left subheap
@@ -127,11 +121,6 @@ mini* pHeapify(mini* A, mini n)
 		mini countToMid = mids[id];
 		//making lo n-countToMid-1 vs n-countToMid changes which tests pass
 		mini lo = 0, hi = n;
-		//mini lo = n-countToMid-1, hi = n;
-		if (lo < 0)
-		{
-			lo = 0;
-		}
 
 		while (arr_count[((powLookup[lo]-1) & id & (~bigMaxPos))] < countToMid)
 		{
@@ -244,7 +233,7 @@ mini count(mini lo, mini hi, biggy combo, biggy* powLookup)
 	}
 	//here would be a good place for a sequential cutoff
 
-	//first=val, second=loc
+	//first=value, second=loction
 	mini left, right;
 	#pragma omp task untied shared(lo, hi, combo, left)
 	{
