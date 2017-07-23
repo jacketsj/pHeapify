@@ -30,15 +30,49 @@
 \subsection*{Parallel Heapify}
 \begin{algorithm}[H]
 \caption{pHeapify}
-\KwData{Integer Array A[]}
-\KwResult{Integer Array meeting the Heap Properties}
-\tcp{comment}
-statement\tcp*{comment}
-\If(\tcp*[f]{comment}){test}
+\KwData{Integer Array $A[]$, int $n$ (size)}
+\KwResult{Integer Array meeting the Heap Properties that is a permutation of $A$}
+\If(\tcp*[f]{Parallelization useless in base case}){$n\leq1$}
 {
-	do things\;
+	\Return a copy of $A$\;
 }
-\Return stuff\;
+int $C_\#:=exp(2, n)$\tcp*{Number of threads/combinations (combination number)}
+Integer Array $powLookup[n]$\;
+$Map(powLookup[i]:=exp(2,i),n)$\tcp*{Map runs threads in parallel for every $0\leq i<n$}
+Integer Array $arr\_max[C_\#]$\tcp*{The maximum value location in every combination}
+$Map(arr\_max[i]:=max\_loc(A,0,n-1,i,powLookup).index, C_\#)$\;
+Integer Arrays $arr\_count[C_\#]$, $arr\_left[C_\#]$, $arr\_right[C_\#]$, $arr\_mids[C_\#]$\;
+Subroutine $SubheapCount(i)$:
+\begin{description}
+	\item{}
+	$arr\_count[i]:=count(0,n-1,i,powLookup)$\;
+	int $sub:=\frac{arr\_count[i]-1}{2}$\;
+	Round $sub$ down to nearest power of two minus $1$
+	(number that is all $1$s in binary) with binary search\;
+	int $remainder:=\max(arr\_count[i]-2\times sub-1,0)$
+	\tcp*{Leaf nodes that are at the uncompleted depth}
+	$rem:=\min(rem,\left\lceil\frac{arr\_count[i]-rem}{2}\right\rceil$)
+	\tcp*[f]{Remainder extends beyond left subtree}
+	$mids[i]:=sub+rem$\tcp*{Count of left subtree}
+\end{description}
+$Map(SubheapCount(i), C_\#)$\;
+Subroutine $SubheapFind(i)$:
+\begin{description}
+	\item{}
+	int $maxPos:=powLookup[arr\_max[i]]$
+	\tcp*{The position of the maximum}
+	int $midCount:=mids[i]$\tcp*{Count to mid in this combination}
+	Do binary search to find the minimum $k$ such that
+	$arr\_count[((powLookup[k]-1)\ \&\ (\neg maxPos))]\geq midCount$
+	\tcp*{This finds the until the actual mid position in a particular combination}
+	int $midloc:=powLookup[k]-1$\tcp*{The left subtree filter}
+	$arr\_right[i]:=i\ \$\ (midloc)\ \$\ (\neg maxPos)$\;
+	$arr\_left[i]:=i\ \$\ (\neg midloc)\ \$\ (\neg maxPos)$\;
+\end{description}
+$Map(SubheapFind(i), C_\#)$\;
+Integer Array $R[n]$\;
+$CompleteHeap(R, n, arr\_max, arr\_left, arr\_right, 0, C_\#-1, A)$\;
+\Return $R$\;
 \end{algorithm}
 
 \subsection*{Exponent}
