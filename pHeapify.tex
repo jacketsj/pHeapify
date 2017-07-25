@@ -24,6 +24,15 @@
 \maketitle
 
 \section*{Overview}
+\subsection*{Basic background information}
+\indent A heap is a nearly complete binary tree used for priority queues that satisfies the heap property: All nodes are greater than their children.
+In particular, a heap is (in this case), represented as an array, with the node at index $i$'s children stored at indeces $2i+1$ and $2i+2$.
+To "heapify" an array means to generate a permutation of an array meeting the heap property, when interpreted as a heap stored as an array.\\
+\subsection*{The algorithm}
+\indent This parallel implementation of a heapify algorithm runs in $\Theta(\log n)$ span, but with $\Theta(2^n)$ work, where $n$ is the size of the input array.\\
+\indent The algorithm functions by completing a series of subproblems in parallel, and then using compiling some of the results.
+Specifically, the algorithm finds the maximum of every single subset of the array, and then determines the left and right subheaps in that subset.
+These two sets of results are easily compiled into a heap with a recursive subroutine.
 
 \section*{Pseudocode}
 
