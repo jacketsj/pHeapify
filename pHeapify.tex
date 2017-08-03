@@ -90,7 +90,7 @@ $CompleteHeap(R, n, arr\_max, arr\_left, arr\_right, 0, C_\#-1, A)$\;
 \KwData{Integer $b$ (base, passed by value), Integer $k$ (exponent, passed by value)}
 \KwResult{$b^k$}
 \tcp{Simple doubling algorithm}
-int $r:=0$\tcp*{Return value}
+int $r:=1$\tcp*{Return value}
 \While{$k>0$}
 {
 	\If{$k\nmid2$}
@@ -187,7 +187,22 @@ Recurse in Parallel:
 \end{algorithm}
 
 \section*{Proof of Correctness}
-In progress.
+\begin{description}
+	\item{Exponent:}
+	Lemma: Exponent returns $b^k$\\*
+	Proof by induction on $k$:\\*
+	Base Case: $k=0$\\*
+		Then the loop never iterates, so the procedure correctly returns $b^0=1$.\\*
+	Induction Step:	The loop correctly produces the answer for the last $i<k$ steps.\\*
+	Consider the first step. If $k\nmid 2$, then $r$ is multiplied by $b$.\\*
+	Then, by the induction hypothesis, the procedure correctly computes
+	$r=r*(b^2)^{\left\lfloor\frac{k}{2}\right\rfloor}=b^{k-k\mod2}$.\\*
+	Case 1: $k\mod 2=0$. In this case, since $r$ is not initially multiplied by $b$,
+		at the end $r=1\times b^{k-0}=b^k$.\\*
+	Case 2:	$k\mod 2=1$. In this case, since $r$ is initially multiplied by $b$,
+		at the end $r=b\times b^{k-1}=b^{1+k-1}=b^k$.\\*
+	Thus, the procudure is correct by the principle of induction.
+\end{description}
 
 \section*{Proof of (Parallel) Runtime}
 Only parallel span will be analyzed:
