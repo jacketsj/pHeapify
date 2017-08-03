@@ -189,8 +189,46 @@ Recurse in Parallel:
 \section*{Proof of Correctness}
 In progress.
 
-\section*{Proof of Runtime}
-In progress.
+\section*{Proof of (Parallel) Runtime}
+Only parallel span will be analyzed:
+\begin{description}
+	\item{Exponent:}
+		Since $k$ is halved at every step, and all other operations internally run at $O(1)$,
+		the procedure runs in $O(\log k)$ time.
+	\item{Location of Maximum, Count, Completion:}
+		Let $n=h-f$ for a given input.\\*
+		The runtime analysis for these three procedures are identical,
+		since they all follow the same form.\\*
+		Then, the runtime of this procedure runs under the recurrence relation
+		$$T(n)=\max\left(T\left(\left\lfloor\frac{n}{2}\right\rfloor\right),
+		+T\left(\left\lceil\frac{n}{2}\right\rceil\right)\right)+O(1),$$
+		which is trivially solved to find $T(n)\in O(\log n)$.
+	\item{SubheapCount:}
+		Let $n$ be the input $n$.\\*
+		All operations other than the binary search and count should run in $O(1)$ time,
+		so the overall runtime should be $O(\log n)$,
+		since the the binary search runs in $O(\log n)$ time even in a poor implementation
+		(it can be even better with good bounds).
+	\item{SubheapFind:}
+		Similarly to SubheapCount, the binary search is the limiting factor,
+		which can run in $O(\log n)$ time at worst.
+	\item{Parallel Heapify:}
+		In addition to several $O(1)$ calls, this procedure consists several calls:
+		\begin{description}
+			\item{Exponent:} The first call runs in $O(\log n)$ time,
+			and following set of $n$ parallel calls all each run in $O(\log n)$ time,
+			so the as a whole the operations run in $O(\log n)$ time.
+			\item{Location of Maximum:} $2^n$ parallel calls each run in $O(\log n)$ time,
+			so as a whole the operations run in $O(\log n)$ time.
+			\item{SubheapCount:} $2^n$ parallel calls each run in $O(\log n)$ time,
+			so as a whole the oeprations run in $O(\log n)$ time.
+			\item{SubheapFind:} $2^n$ parallel calls each runi n $O(\log n)$ time,
+			so as a whole the oeprations run in $O(\log n)$ time.
+			\item{Complete:} A single call runs in $O(\log n)$ time.
+		\end{description}
+		Since a bounded, finite number of calls each run in $O(\log n)$ time,
+		the procedure as a whole runs in $O(\log n)$ time.
+\end{description}
 
 \end{document}
 
