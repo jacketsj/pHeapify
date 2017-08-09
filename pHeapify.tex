@@ -206,8 +206,23 @@ Recurse in Parallel:
 		%TODO
 		Work in progress.
 	\item{Count:}
-		%TODO
-		Work in progress.
+		Proof by induction:
+		\begin{description}
+			\item{Base Cases:}
+					If $valid(h-f)=0$, then the algorithm returns $0$, as expected
+					since if $h-f=-1$, then the count is trivial, and if
+					$h=f$ but also $2^f\land c\neq 2^f$, then the single number
+					shuld not be included, so the count is appropriately zero.\\*
+					If $valid(h-f)=1$, then the algorithm reutrns $1$, as expected,
+					since this case is reduced to by then checking if $h=f$ anyway.
+			\item{Induction Step:}
+					Assume for all $n<n_0$, the algorithm is correct.
+					So, since the algorithm returns the count of the left and right
+					subarrays, which have strictly less count since $n_0\geq 2$.
+					Thus, since the two paritions have no overlap and their union
+					is the original array set, the algorithm is correct by the principle
+					of induction.
+		\end{description}
 	\item{SubheapCount}
 		%TODO
 		Work in progress.
