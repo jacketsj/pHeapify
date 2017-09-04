@@ -193,7 +193,7 @@ Recurse in Parallel:
 \pagebreak
 \section*{Proof of Correctness}
 \begin{description}
-	\item{Exponent:}
+	\item{\bf Exponent:}\\*
 	Lemma: Exponent returns $b^k$\\*
 	Proof by induction on $k$:\\*
 	\begin{description}
@@ -210,7 +210,7 @@ Recurse in Parallel:
 	\end{description}
 	Thus, the procudure is correct by the principle of induction.
 
-	\item{Location of Maximum:}
+	\item{\bf Location of Maximum:}\\*
 	Assume that the maximum is at location $i$.\\*
 	Proof by induction on $h-f+1$
 	that the function will always return the maximum in the given range if there is one:\\*
@@ -237,7 +237,7 @@ Recurse in Parallel:
 	Thus, the procudure is correct by the principle of induction.
 
 	\pagebreak
-	\item{Count:}
+	\item{\bf Count:}\\*
 	Proof by induction on $h-f$:
 	\begin{description}
 		\item{Base Cases:} $h-f\leq1$\\*
@@ -257,7 +257,7 @@ Recurse in Parallel:
 	\end{description}
 	Thus, the procudure is correct by the principle of induction.
 
-	\item{SubheapCount}
+	\item{\bf SubheapCount:}\\*
 	Lemma: $\forall m\in\NN, \sum_{n=0}^m2^n=2^{m+1}-1$.
 	Proof by induction on $m$:
 	\begin{description}
@@ -290,7 +290,7 @@ Recurse in Parallel:
 	Therefore, it is appropriately placed in \verb|mids[i]|.
 
 	\pagebreak
-	\item{SubheapFind}
+	\item{\bf SubheapFind:}\\*
 	We will show that this procedure produces the correct left and right subheap combinations.\\*
 	\verb|maxPos| is set to be the index of the maximum value, represented as an integer so that
 	it can be used in bitwise operations, and is correct by the correctness of the maximum location
@@ -304,7 +304,7 @@ Recurse in Parallel:
 	invalid indeces and the previous maximum are filtered out.\\*
 	Likewise, $i\ \&\ (\neg midloc)\ \&\ (\neg maxPos)$ is the combination of the left subheap.\\*
 
-	\item{Complete Heap}
+	\item{\bf Complete Heap:}\\*
 	Proof by induction on the size of the range given by the combination $c$ (call this $r$):
 	\begin{description}
 		\item{Base Case:} $r=0$\\*
@@ -326,7 +326,7 @@ Recurse in Parallel:
 	\end{description}
 	Thus, the procudure is correct by the principle of induction.
 
-	\item{Parallel Heapify}
+	\item{\bf Parallel Heapify:}\\*
 	If there is at most one value in the array, then the array is already a heap,
 	so a duplicate is appropriately returned.\\*
 	Since there are $n$ values in the array, for any given combination, each of those values
