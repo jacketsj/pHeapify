@@ -58,7 +58,7 @@ Subroutine $SubheapCount(i)$:
 	int $sub:=\frac{arr\_count[i]-1}{2}$\;
 	Round $sub$ down to nearest power of two minus $1$
 	(number that is all $1$s in binary) with binary search\;
-	int $remainder:=\max(arr\_count[i]-2\times sub-1,0)$
+	int $rem:=\max(arr\_count[i]-2\times sub-1,0)$
 	\tcp*{Leaf nodes that are at the uncompleted depth}
 	$rem:=\min(rem,\left\lceil\frac{arr\_count[i]-rem}{2}\right\rceil$)
 	\tcp*[f]{Remainder extends beyond left subtree}
@@ -234,7 +234,7 @@ Recurse in Parallel:
 	\item{Count:}
 	Proof by induction on $h-f$:
 	\begin{description}
-		\item{Base Cases:} $h-f\leq1$
+		\item{Base Cases:} $h-f\leq1$\\*
 		If $valid(h-f)=0$, then the algorithm returns $0$, as expected
 		since if $h-f=-1$, then the count is trivial, and if
 		$h=f$ but also $2^f\land c\neq 2^f$, then the single number
@@ -253,7 +253,36 @@ Recurse in Parallel:
 
 	\item{SubheapCount}
 	%TODO
-	Work in progress.
+	Lemma: \forall $m\in\NN, \sum_{n=0}^m2^n=2^{m+1}-1$.
+	Proof by induction on $m$:
+	\begin{description}
+		\item{Base Case:} $m=0$\\*
+		Then, $\sum_{n=0}^m2^n=2^0=1=2-1=2^{1}-1=2^{0+1}-1=2^{m+1}-1$.\\*
+		\item{Induction Step:} Assume true for $m\geq0$.\\*
+		We will show that it remains true for $m+1$:
+		$\sum_{n=0}^{m+1}2^n=\left(\sum_{n=0}^{m}2^n\right)+2^{m+1}$.\\*
+		By the induction hypothesis,
+		$\left(\sum_{n=0}^{m}2^n\right)+2^{m+1}=2^{m+1}-1+2^{m+1}=2\times2^{m+1}-1=2^{m+2}-1$,
+		as expected.
+	\end{description}
+	Now, continuing on with the proof:\\*
+	We will show that this procedure correctly produces the correct count
+	of nodes that should be placed in the left subheap of the given subrange from $i$ to $n-1$.\\*
+	By the correctness of \verb|Count|, the correct number of valid nodes in the range are determined.
+	Call this number $a$.\\*
+	Then, since the maximum is not included in either subheap, $a-1$ values must be placed into the
+	two subheaps.\\*
+	As the number of nodes at each height of a complete binary tree is a power of two, the same must be
+	true of all but the last row of both subheaps, as they are near-complete trees.
+	Thus, the number of nodes in an entire heap aside from the last row would be
+	one less than a power of two (by our lemma).\\*
+	$sub+1$ is defined to be the largest power of two less than or equal to $\frac{a-1}{2}$.\\*
+	Therefore, $sub$ is the number of nodes in the left subheap, except for the final row.\\*
+	$rem$ is thus defined to be the number of nodes in the last row of the left subheap.\\*
+	Thus, $sub+rem$ is the number of nodes in the left subheap, so it is also the relative index
+	of the first value of the right subheap (although not the index within the input array, due
+	to the use of combinations).\\*
+	Therefore, it is appropriately placed in \verb|mids[i]|.
 
 	\item{SubheapFind}
 	%TODO
