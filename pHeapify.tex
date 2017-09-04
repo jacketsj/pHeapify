@@ -24,16 +24,17 @@
 \maketitle
 
 \section*{Overview}
-\subsection*{Basic background information}
+\subsection*{Background Information}
 \indent A heap is a nearly complete binary tree used for priority queues that satisfies the heap property: All nodes are greater than their children.
 In particular, a heap is (in this case), represented as an array, with the node at index $i$'s children stored at indeces $2i+1$ and $2i+2$.
 To "heapify" an array means to generate a permutation of an array meeting the heap property, when interpreted as a heap stored as an array.\\
-\subsection*{The algorithm}
+\subsection*{The Algorithm}
 \indent This parallel implementation of a heapify algorithm runs in $\Theta(\log n)$ span, but with $\Theta(2^n)$ work, where $n$ is the size of the input array.\\
 \indent The algorithm functions by completing a series of subproblems in parallel, and then using compiling some of the results.
 Specifically, the algorithm finds the maximum of every single subset of the array, and then determines the left and right subheaps in that subset.
 These two sets of results are easily compiled into a heap with a recursive subroutine.
 
+\pagebreak
 \section*{Pseudocode}
 
 \subsection*{Parallel Heapify}
@@ -84,6 +85,7 @@ $CompleteHeap(R, n, arr\_max, arr\_left, arr\_right, 0, C_\#-1, A)$\;
 \Return $R$\;
 \end{algorithm}
 
+\pagebreak
 \subsection*{Exponent}
 \begin{algorithm}[H]
 \caption{exp}
@@ -103,6 +105,7 @@ int $r:=1$\tcp*{Return value}
 \Return $r$\;
 \end{algorithm}
 
+\pagebreak
 \subsection*{Location of Maximum}
 \begin{algorithm}[H]
 \caption{max\_loc}
@@ -142,6 +145,7 @@ Create int left, right\;
 \Return $right$\;
 \end{algorithm}
 
+\pagebreak
 \subsection*{Count}
 \begin{algorithm}[H]
 \caption{count}
@@ -186,6 +190,7 @@ Recurse in Parallel:
 \end{description}
 \end{algorithm}
 
+\pagebreak
 \section*{Proof of Correctness}
 \begin{description}
 	\item{Exponent:}
@@ -231,6 +236,7 @@ Recurse in Parallel:
 	\end{description}
 	Thus, the procudure is correct by the principle of induction.
 
+	\pagebreak
 	\item{Count:}
 	Proof by induction on $h-f$:
 	\begin{description}
@@ -283,6 +289,7 @@ Recurse in Parallel:
 	to the use of combinations).\\*
 	Therefore, it is appropriately placed in \verb|mids[i]|.
 
+	\pagebreak
 	\item{SubheapFind}
 	We will show that this procedure produces the correct left and right subheap combinations.\\*
 	\verb|maxPos| is set to be the index of the maximum value, represented as an integer so that
