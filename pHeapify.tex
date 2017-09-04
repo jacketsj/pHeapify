@@ -191,47 +191,78 @@ Recurse in Parallel:
 	\item{Exponent:}
 	Lemma: Exponent returns $b^k$\\*
 	Proof by induction on $k$:\\*
-	Base Case: $k=0$\\*
+	\begin{description}
+		\item{Base Case:} $k=0$\\*
 		Then the loop never iterates, so the procedure correctly returns $b^0=1$.\\*
-	Induction Step:	The loop correctly produces the answer for the last $i<k$ steps.\\*
-	Consider the first step. If $k\nmid 2$, then $r$ is multiplied by $b$.\\*
-	Then, by the induction hypothesis, the procedure correctly computes
-	$r=r*(b^2)^{\left\lfloor\frac{k}{2}\right\rfloor}=b^{k-k\mod2}$.\\*
-	Case 1: $k\mod 2=0$. In this case, since $r$ is not initially multiplied by $b$,
-		at the end $r=1\times b^{k-0}=b^k$.\\*
-	Case 2:	$k\mod 2=1$. In this case, since $r$ is initially multiplied by $b$,
-		at the end $r=b\times b^{k-1}=b^{1+k-1}=b^k$.\\*
+		\item{Induction Step:} The loop correctly produces the answer for the last $i<k$ steps.\\*
+		Consider the first step. If $k\nmid 2$, then $r$ is multiplied by $b$.\\*
+		Then, by the induction hypothesis, the procedure correctly computes
+		$r=r*(b^2)^{\left\lfloor\frac{k}{2}\right\rfloor}=b^{k-k\mod2}$.\\*
+		Case 1: $k\mod 2=0$. In this case, since $r$ is not initially multiplied by $b$,
+			at the end $r=1\times b^{k-0}=b^k$.\\*
+		Case 2:	$k\mod 2=1$. In this case, since $r$ is initially multiplied by $b$,
+			at the end $r=b\times b^{k-1}=b^{1+k-1}=b^k$.\\*
+	\end{description}
 	Thus, the procudure is correct by the principle of induction.
+
 	\item{Location of Maximum:}
-		%TODO
-		Work in progress.
+	Assume that the maximum is at location $i$.\\*
+	Proof by induction on $h-f+1$
+	that the function will always return the maximum in the given range if there is one:\\*
+	\begin{description}
+		\item{Base case:} $h-f+1\leq1$:\\*
+		If $h-f+1=1$,
+		then the function is defined as returning the only value in the input.\\*
+		If $h-f+1=0$,
+		then the function is defined as returning
+		a value less than the codomain of the input.\\*
+		\item{Induction step:} Assume true for all $m\leq n$ such that $h-f+1=m$, where $m,n\in\NN$.\\*
+		We will now show that the function returns the correct value for $h-f+1=n+1>1$:\\*
+		Then, since $h-f+1>1$, the base cases are ignored.\\*
+		Let \verb|left| and \verb|right| be defined as they are in the function.\\*
+		By the induction hypothesis, \verb|left| and \verb|right| are both less than or equal
+		to the maximum in the full range, since they were made by recusion on subranges,
+		and recursion on an empty subrange returns a value less than the whole of the codomain.\\*
+		If $\verb|left.value|\neq\verb|right.value|$, then the function trivially returns the maximum.\\*
+		If $\verb|left.value|=\verb|right.value|$, then the function returns the leftmost of the two,
+		so the maximum is returned, since both are the maximum.
+		Note that the function checks the index given, so no assumptions about the correct choices
+		of subranges must be made.\\*
+	\end{description}
+	Thus, the procudure is correct by the principle of induction.
+
 	\item{Count:}
-		Proof by induction:
-		\begin{description}
-			\item{Base Cases:}
-					If $valid(h-f)=0$, then the algorithm returns $0$, as expected
-					since if $h-f=-1$, then the count is trivial, and if
-					$h=f$ but also $2^f\land c\neq 2^f$, then the single number
-					shuld not be included, so the count is appropriately zero.\\*
-					If $valid(h-f)=1$, then the algorithm reutrns $1$, as expected,
-					since this case is reduced to by then checking if $h=f$ anyway.
-			\item{Induction Step:}
-					Assume for all $n<n_0$, the algorithm is correct.
-					So, since the algorithm returns the count of the left and right
-					subarrays, which have strictly less count since $n_0\geq 2$.
-					Thus, since the two paritions have no overlap and their union
-					is the original array set, the algorithm is correct by the principle
-					of induction.
-		\end{description}
+	Proof by induction on $h-f$:
+	\begin{description}
+		\item{Base Cases:} $h-f\leq1$
+				If $valid(h-f)=0$, then the algorithm returns $0$, as expected
+				since if $h-f=-1$, then the count is trivial, and if
+				$h=f$ but also $2^f\land c\neq 2^f$, then the single number
+				shuld not be included, so the count is appropriately zero.\\*
+				If $valid(h-f)=1$, then the algorithm reutrns $1$, as expected,
+				since this case is reduced to by then checking if $h=f$ anyway.
+		\item{Induction Step:}
+				Assume for all $n<n_0$, the algorithm is correct.
+				So, since the algorithm returns the count of the left and right
+				subarrays, which have strictly less count since $n_0\geq 2$.
+				Thus, since the two paritions have no overlap and their union
+				is the original array set, the algorithm is correct by the principle
+				of induction.
+	\end{description}
+	Thus, the procudure is correct by the principle of induction.
+
 	\item{SubheapCount}
-		%TODO
-		Work in progress.
+	%TODO
+	Work in progress.
+
 	\item{SubheapFind}
-		%TODO
-		Work in progress.
+	%TODO
+	Work in progress.
+
 	\item{Parallel Heapify}
-		%TODO
-		Work in progress.
+	%TODO
+	Work in progress.
+
 \end{description}
 
 \section*{Proof of (Parallel) Runtime}
