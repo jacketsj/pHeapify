@@ -320,8 +320,18 @@ Recurse in Parallel:
 	Thus, the procudure is correct by the principle of induction.
 
 	\item{Parallel Heapify}
-	%TODO
-	Work in progress.
+	If there is at most one value in the array, then the array is already a heap,
+	so a duplicate is appropriately returned.\\*
+	Since there are $n$ values in the array, for any given combination, each of those values
+	is either included or excluded, so the number of combinations is the number of binary
+	numbers with $n$ digits, of which there are $2^n$, which is calculated correctly by the
+	correctness of the exponent function.\\*
+	By the correctness of the exponent and maximum location functions, $powLookup$ and $arr\_max$
+	are correctly filled.\\*
+	By the correctness of the subheap count function, $mids$ is correctly filled.\\*
+	By the correctness of the subheap find function, $arr\_left$ and $arr\_right$ are correctly filled.\\*
+	By the correctness of the complete heap function, $R$ is correctly filled.\\*
+	Therefore, $R$ is a heapification of the input array $A$ upon its return, so the function is correct.
 
 \end{description}
 
