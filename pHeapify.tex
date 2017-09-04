@@ -172,9 +172,9 @@ Recurse in Parallel:
 		Array $arr\_left$, Array $arr\_right$,
 		int $i$ (index), int $c$ (combination number), Array $A$}
 \KwResult{int (count)}
-\If(\tcp*{Beyond heap bounds or empty combination}){$i>n\lor c=0$}
+\If(\tcp*{Beyond heap bounds or empty combination}){$i\geq n\lor c=0$}
 {
-	\Return 0\;
+	\Return\;
 }
 $H[i]:=A[arr\_max[c]]$\tcp*{Add maximum remaining to heap}
 Recurse in Parallel:
@@ -182,7 +182,7 @@ Recurse in Parallel:
 	\item{(left)} $left:=Recurse(H, n, arr\_max, arr\_left, arr\_right,
 			2i+1, arr\_left[c], A)$\;
 	\item{(right)} $right:=Recurse(H, n, arr\_max, arr\_left, arr\_right,
-			2i+1, arr\_right[c], A)$\;
+			2i+2, arr\_right[c], A)$\;
 \end{description}
 \end{algorithm}
 
@@ -298,8 +298,26 @@ Recurse in Parallel:
 	Likewise, $i\ \&\ (\neg midloc)\ \&\ (\neg maxPos)$ is the combination of the left subheap.\\*
 
 	\item{Complete Heap}
-	%TODO
-	Work in progress.
+	Proof by induction on the size of the range given by the combination $c$ (call this $r$):
+	\begin{description}
+		\item{Base Case:} $r=0$\\*
+		Since no values are in the range, $c=0$, since otherwise $c$ would give at least one value.
+		Thus, the function returns with no necessary action.\\*
+		\item{Induction Step:} Assume that the function is correct for all $r<r_0$, where $r_0,r\in\NN$\\*
+		We will show that the function is correct for $r_0$.\\*
+		\begin{description}
+			\item{Case 1:} If $i\geq n$, then the index is beyond the range of the array,
+			so the combination number is undefined,
+			and thus the function appropriately returns immediately.\\*
+			\item{Case 2:} If $i<n$, then the index is within the range of the array.\\*
+			So, since there must be at least one included number in the combination, a maximum
+			must exist.\\*
+			Thus, by the correctness of the maximum location function, $H[i]$ is set to be the value
+			fetched from the input array.\\*
+			By the induction hypothesis, the remainder of the heap is created correctly.\\*
+		\end{description}
+	\end{description}
+	Thus, the procudure is correct by the principle of induction.
 
 	\item{Parallel Heapify}
 	%TODO
