@@ -75,8 +75,8 @@ Subroutine $SubheapFind(i)$:
 	$arr\_count[((powLookup[k]-1)\ \&\ (\neg maxPos))]\geq midCount$
 	\tcp*{This finds the until the actual mid position in a particular combination}
 	int $midloc:=powLookup[k]-1$\tcp*{The left subtree filter}
-	$arr\_right[i]:=i\ \$\ (midloc)\ \$\ (\neg maxPos)$\;
-	$arr\_left[i]:=i\ \$\ (\neg midloc)\ \$\ (\neg maxPos)$\;
+	$arr\_right[i]:=i\ \&\ (midloc)\ \&\ (\neg maxPos)$\;
+	$arr\_left[i]:=i\ \&\ (\neg midloc)\ \&\ (\neg maxPos)$\;
 \end{description}
 $Map(SubheapFind(i), C_\#)$\;
 Integer Array $R[n]$\;
@@ -252,7 +252,6 @@ Recurse in Parallel:
 	Thus, the procudure is correct by the principle of induction.
 
 	\item{SubheapCount}
-	%TODO
 	Lemma: \forall $m\in\NN, \sum_{n=0}^m2^n=2^{m+1}-1$.
 	Proof by induction on $m$:
 	\begin{description}
@@ -280,11 +279,25 @@ Recurse in Parallel:
 	Therefore, $sub$ is the number of nodes in the left subheap, except for the final row.\\*
 	$rem$ is thus defined to be the number of nodes in the last row of the left subheap.\\*
 	Thus, $sub+rem$ is the number of nodes in the left subheap, so it is also the relative index
-	of the first value of the right subheap (although not the index within the input array, due
+	of the first value in the right subheap (although not the index within the input array, due
 	to the use of combinations).\\*
 	Therefore, it is appropriately placed in \verb|mids[i]|.
 
 	\item{SubheapFind}
+	We will show that this procedure produces the correct left and right subheap combinations.\\*
+	\verb|maxPos| is set to be the index of the maximum value, represented as an integer so that
+	it can be used in bitwise operations, and is correct by the correctness of the maximum location
+	function.\\*
+	Then, $k$ is defined as the minimum value such that
+	$arr\_count[((powLookup[k]-1)\ \&\ (\neg maxPos))]\geq mids[i]$,
+	so $midloc$ is the binary number of only $1$'s such that
+	$arr\_count[(midloc\ \&\ (\neg maxPos))]\geq mids[i]$.\\*
+	Thus, if and only if an included value should be in the right subheap, its index is $1$ in midloc.\\*
+	Therefore, $i\ \&\ (midloc)\ \&\ (\neg maxPos)$ is the combination of the right subheap, since the
+	invalid indeces and the previous maximum are filtered out.\\*
+	Likewise, $i\ \&\ (\neg midloc)\ \&\ (\neg maxPos)$ is the combination of the left subheap.\\*
+
+	\item{Complete Heap}
 	%TODO
 	Work in progress.
 
